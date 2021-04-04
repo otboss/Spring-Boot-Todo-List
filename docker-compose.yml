@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  postgres:
+    ports:
+      - 5440:5432
+    image: postgres:12.5
+    environment:
+      POSTGRES_PASSWORD: admin100%
+      POSTGRES_USER: admin
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - 90:80
