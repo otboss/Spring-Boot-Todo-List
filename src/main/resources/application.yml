@@ -1,0 +1,16 @@
+jwt:
+  secret: Pr79uirmoWnVG4QwjNiXOyOaU9rnnSG6gKodqkcUL4sRvNKaaiejUkN9i5O2bePO
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5440/todo
+    username: admin
+    password: admin100%
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true

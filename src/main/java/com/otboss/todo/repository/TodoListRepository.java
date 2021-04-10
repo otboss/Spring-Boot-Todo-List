@@ -1,5 +1,7 @@
 package com.otboss.todo.repository;
 
+import java.util.Optional;
+
 import com.otboss.todo.model.TodoListItem;
 import com.otboss.todo.repository.contracts.TodoListItemService;
 
@@ -23,7 +25,7 @@ public class TodoListRepository implements TodoListItemService {
     }
 
     @Override
-    public TodoListItem getListItem(int id) {
+    public Optional<TodoListItem> getListItem(int id) {
         // TODO Auto-generated method stub
         return null;
     }

@@ -1,5 +1,7 @@
 package com.otboss.todo.repository;
 
+import java.util.Optional;
+
 import com.otboss.todo.model.User;
 import com.otboss.todo.repository.contracts.UserService;
 
@@ -24,8 +26,9 @@ public class UserRepository implements UserService {
     }
 
     @Override
-    public User getUser(int id) {
+    public Optional<User> getUser(int id) {
         // TODO Auto-generated method stub
+        final String sql = "SELECT * FROM ";
         return null;
     }
 

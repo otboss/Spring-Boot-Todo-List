@@ -5,10 +5,10 @@ import java.util.Date;
 public class Token {
 
     private String email;
-    private long issuedAt = (new Date(System.currentTimeMillis())).getTime();
-    private long expiresAt = this.issuedAt + (long) 2.88e+7;
+    private Long issuedAt = (new Date(System.currentTimeMillis())).getTime();
+    private Long expiresAt = this.issuedAt + (long) 2.88e+7;
 
-    public Token(String email, long expiresAt) {
+    public Token(String email, Long expiresAt) {
         this.email = email;
         this.expiresAt = expiresAt;
     }
@@ -17,11 +17,11 @@ public class Token {
         return this.email;
     }
 
-    public long getExpiresAt() {
+    public Long getExpiresAt() {
         return this.expiresAt;
     }
 
-    public long getIssuedAt() {
+    public Long getIssuedAt() {
         return this.issuedAt;
     }
 
