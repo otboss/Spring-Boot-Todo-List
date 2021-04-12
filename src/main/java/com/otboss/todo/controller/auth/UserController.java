@@ -2,9 +2,11 @@ package com.otboss.todo.controller.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import io.jsonwebtoken.Jwts;
 
 import com.otboss.todo.model.User;
@@ -20,13 +22,14 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(User credentials) {
-        // TODO: Retrieve user credentials from the database
+        // TODO: Retrieve user credentials from the database and authenticate user
         return "";
     }
 
     @PostMapping("/register")
-    public String register(User credentials) {
+    public String register(@RequestBody User credentials) {
         // TODO: Save user to database return 201 status code
+        credentials.setPassword(BCrypt.withDefaults().hashToString(12, credentials.getPassword().toCharArray()));
         return "";
     }
 }

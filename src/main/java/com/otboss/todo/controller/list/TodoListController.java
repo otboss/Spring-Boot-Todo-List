@@ -1,5 +1,7 @@
 package com.otboss.todo.controller.list;
 
+import java.util.Optional;
+
 import com.otboss.todo.model.TodoListItem;
 import com.otboss.todo.repository.TodoListRepository;
 
@@ -22,25 +24,31 @@ public class TodoListController {
 
     @PostMapping()
     public void createListItem(@RequestBody TodoListItem listItem) {
+        // TODO: Implement user authentication
         // TODO: Save new list item for user
     }
 
     @GetMapping()
     public TodoListItem[] readList(@RequestParam String filter, @RequestParam String offset,
             @RequestParam String limit) {
+        // TODO: Implement user authentication here
         // TODO: get list items from database and return to to user
         // return this.todoListRepository.getListItems(userId, filter, offset, limit);
         return new TodoListItem[] {};
     }
 
     @PutMapping()
-    public void updateListItem(long id, TodoListItem item) {
-        // return new String[] {""};
+    public void updateListItem(@RequestBody long id, @RequestBody TodoListItem item) throws NullPointerException {
+        // TODO: Implement user authentication here
+        TodoListItem listItem = (this.todoListRepository.findById(id)).get();
+        listItem.setEntry(listItem.getEntry());
+        listItem.setChecked(listItem.getChecked());
+        this.todoListRepository.save(listItem);
     }
 
     @DeleteMapping()
     public void deleteListItem(@RequestBody long id) {
-
+        // TODO: Implement user authentication here
     }
 
 }
