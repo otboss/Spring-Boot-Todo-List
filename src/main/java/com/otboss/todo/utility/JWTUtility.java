@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
@@ -25,7 +26,7 @@ public class JWTUtility {
                 .compact();
     }
 
-    public Token parseToken(String jwtToken) throws ExpiredJwtException {
+    public Token parseToken(String jwtToken) throws ExpiredJwtException, MalformedJwtException {
         Claims jwtPayload = Jwts.parser().setSigningKey(this.env.jwtSecret).parseClaimsJws(jwtToken).getBody();
         Gson gson = new Gson();
         Token token = gson.fromJson(jwtPayload.toString(), Token.class);

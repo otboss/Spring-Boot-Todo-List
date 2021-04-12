@@ -1,9 +1,12 @@
 package com.otboss.todo.controller.auth;
 
+import org.hibernate.criterion.Example;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
@@ -27,6 +30,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
     public String register(@RequestBody User credentials) {
         // TODO: Save user to database return 201 status code
         credentials.setPassword(BCrypt.withDefaults().hashToString(12, credentials.getPassword().toCharArray()));
