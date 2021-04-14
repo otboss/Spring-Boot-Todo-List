@@ -1,7 +1,5 @@
 package com.otboss.todo.model;
 
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,6 +21,8 @@ public class TodoListItem {
     private Boolean checked = false;
     @Column(name = "entry", nullable = false)
     private String entry;
+    @Column(name = "timestamp", nullable = false)
+    private Long timestamp;
 
     public TodoListItem(String entry, Long userId) {
         this.entry = entry;
@@ -35,6 +35,10 @@ public class TodoListItem {
 
     public void setChecked(Boolean checked) {
         this.checked = checked;
+    }
+
+    public Long getId() {
+        return this.id;
     }
 
     public Long getUserId() {

@@ -20,3 +20,10 @@
         <pre>mvn spring-boot:run</pre>
     </li>
 </ol>
+
+
+<h3>Some Curl Commands</h3>
+<span>Create Account</span>
+<pre>curl -d '{"email":"example@gmail.com", "password":"password"}' -H "Content-Type: application/json" -X POST http://localhost:8080/api/v1/auth/register</pre>
+<span>Sign In</span>
+<pre>curl -d '{"email":"example@gmail.com", "password":"password"}' -H "Content-Type: application/json" -X POST http://localhost:8080/api/v1/auth/login</pre>
