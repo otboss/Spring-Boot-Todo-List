@@ -8,9 +8,8 @@ public class Token {
     private Long issuedAt = (new Date(System.currentTimeMillis())).getTime();
     private Long expiresAt = this.issuedAt + (long) 2.88e+7;
 
-    public Token(String email, Long expiresAt) {
+    public Token(String email) {
         this.email = email;
-        this.expiresAt = expiresAt;
     }
 
     public String getEmail() {

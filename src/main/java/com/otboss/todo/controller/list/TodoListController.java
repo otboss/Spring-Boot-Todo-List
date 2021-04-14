@@ -1,7 +1,5 @@
 package com.otboss.todo.controller.list;
 
-import java.util.Optional;
-
 import com.otboss.todo.model.TodoListItem;
 import com.otboss.todo.repository.TodoListRepository;
 

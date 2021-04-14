@@ -12,7 +12,11 @@
         Once prompted for the password enter: <b>admin100%</b>
     </li>
     <li>
-        Start the Spring Boot server using the command:
+        Once signed into the postgres client cli tool, create the todo database using the command
+        <pre>CREATE DATABASE todo;</pre>
+    </li>
+    <li>
+        Exit the postgres client and start the Spring Boot server using the command:
         <pre>mvn spring-boot:run</pre>
     </li>
 </ol>

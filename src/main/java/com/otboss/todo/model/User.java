@@ -29,12 +29,15 @@ public class User {
     @JoinColumn(name = "userId")
     private List<TodoListItem> listItems;
 
+    public User() {
+    }
+
     public User(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
