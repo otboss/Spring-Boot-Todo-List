@@ -1,5 +1,6 @@
-package com.otboss.todo;
+package com.otboss.todo.controller;
 
+import com.otboss.todo.constants.TestConstants;
 import com.otboss.todo.controller.auth.UserController;
 import com.otboss.todo.model.Token;
 import com.otboss.todo.model.User;
@@ -31,7 +32,8 @@ public class UserControllerTests {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    private User testUser = new User("example@example.com", "password");
+    @Autowired
+    private TestConstants testConstants;
 
     @Test
     public void contextLoads() throws Exception {
@@ -41,8 +43,9 @@ public class UserControllerTests {
     @Test
     @DisplayName("Given that user provides valid email and password a 201 - created response should be returned")
     public void registration() {
-        String registerUrl = String.format("http://localhost:%d/api/v1/auth/register", this.port);
-        ResponseEntity<String> response = this.restTemplate.postForEntity(registerUrl, this.testUser, String.class, "");
+        String url = String.format("http://localhost:%d/api/v1/auth/register", this.port);
+        ResponseEntity<String> response = this.restTemplate.postForEntity(url, this.testConstants.testUser,
+                String.class, "");
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isEqualTo(null);
     }
@@ -50,9 +53,10 @@ public class UserControllerTests {
     @Test
     @DisplayName("Given that user provides existing email and password a 202 - accepted response should be returned")
     public void login() {
-        String loginUrl = String.format("http://localhost:%d/api/v1/auth/login", this.port);
+        String url = String.format("http://localhost:%d/api/v1/auth/login", this.port);
         User testUser = new User("example@example.com", "password");
-        ResponseEntity<String> response = this.restTemplate.postForEntity(loginUrl, this.testUser, String.class, "");
+        ResponseEntity<String> response = this.restTemplate.postForEntity(url, this.testConstants.testUser,
+                String.class, "");
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
         Token token = this.jwtUtility.parseToken(response.getBody());
         assertThat(token.getEmail()).isEqualTo(testUser.getEmail());
