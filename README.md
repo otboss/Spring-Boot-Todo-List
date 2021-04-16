@@ -22,8 +22,16 @@
 </ol>
 
 
-<h3>Some Curl Commands</h3>
+<h3>Sample Curl Requests</h3>
 <span>Create Account</span>
 <pre>curl -d '{"email":"example@gmail.com", "password":"password"}' -H "Content-Type: application/json" -X POST http://localhost:8080/api/v1/auth/register</pre>
 <span>Sign In</span>
 <pre>curl -d '{"email":"example@gmail.com", "password":"password"}' -H "Content-Type: application/json" -X POST http://localhost:8080/api/v1/auth/login</pre>
+<span>Create TODO List Item</span>
+<pre>curl -d '{"entry": "my test todo item"}' -H "Authorization: Bearer [JWT TOKEN]" -H "Content-Type: application/json" -X POST 'http://localhost:8080/api/v1/list'</pre>
+<span>Get TODO List Items</span>
+<pre>curl -H "Authorization: Bearer [JWT TOKEN]" -H "Content-Type: application/json" -X GET 'http://localhost:8080/api/v1/list?filter=&offset=0&limit=40'</pre>
+<span>Update TODO List Items</span>
+<pre>curl -d '{"id": 1, "entry": "hello world 2", "checked": true}' -H "Authorization: Bearer [JWT TOKEN]" -H "Content-Type: application/json" -X PUT 'http://localhost:8080/api/v1/list'</pre>
+<span>Delete TODO List Items</span>
+<pre>curl -d '{"id": 1}' -H "Authorization: Bearer [JWT TOKEN]" -H "Content-Type: application/json" -X DELETE 'http://localhost:8080/api/v1/list'</pre>

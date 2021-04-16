@@ -1,6 +1,7 @@
 package com.otboss.todo.controller.list;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import com.otboss.todo.model.TodoListItem;
@@ -94,10 +95,10 @@ public class TodoListController {
 
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
-    public void updateListItem(@RequestBody long id, @RequestBody TodoListItem item,
-            @RequestHeader(name = "Authorization") String token) throws ResponseStatusException {
+    public void updateListItem(@RequestBody TodoListItem item, @RequestHeader(name = "Authorization") String token)
+            throws ResponseStatusException {
         User user = this.getUserFromToken(token);
-        Optional<TodoListItem> listItem = this.todoListRepository.findById(id);
+        Optional<TodoListItem> listItem = this.todoListRepository.findById(item.getId());
         if (listItem == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "list item not found");
         }
@@ -107,15 +108,17 @@ public class TodoListController {
         }
         listItemParsed.setEntry(listItemParsed.getEntry());
         listItemParsed.setChecked(listItemParsed.getChecked());
-        this.todoListRepository.save(listItemParsed);
+        this.todoListRepository.updateById(item.getId(), item.getEntry(), item.getChecked());
     }
 
     @DeleteMapping()
     @ResponseStatus(HttpStatus.OK)
-    public void deleteListItem(@RequestBody long id, @RequestHeader(name = "Authorization") String token) {
+    public void deleteListItem(@RequestBody TodoListItem item, @RequestHeader(name = "Authorization") String token) {
         User user = this.getUserFromToken(token);
-        Optional<TodoListItem> listItem = this.todoListRepository.findById(id);
-        if (listItem == null) {
+        Optional<TodoListItem> listItem;
+        try {
+            listItem = this.todoListRepository.findById(item.getId());
+        } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "list item not found");
         }
         TodoListItem listItemParsed = listItem.get();

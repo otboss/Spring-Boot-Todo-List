@@ -1,64 +1,78 @@
 package com.otboss.todo.controller;
 
-import com.otboss.todo.constants.TestConstants;
-import com.otboss.todo.controller.auth.UserController;
+import com.google.gson.Gson;
 import com.otboss.todo.model.Token;
 import com.otboss.todo.model.User;
 import com.otboss.todo.utility.JWTUtility;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class UserControllerTests {
-
-    @Autowired
-    private UserController controller;
 
     @Autowired
     private JWTUtility jwtUtility;
 
-    @LocalServerPort
-    private int port;
-
     @Autowired
-    private TestRestTemplate restTemplate;
+    private MockMvc mockMvc;
 
-    @Autowired
-    private TestConstants testConstants;
-
-    @Test
-    public void contextLoads() throws Exception {
-        assertThat(controller).isNotNull();
-    }
+    private User testUser = new User("example@example.com", "password");
 
     @Test
     @DisplayName("Given that user provides valid email and password a 201 - created response should be returned")
+    @Order(1)
     public void registration() {
-        String url = String.format("http://localhost:%d/api/v1/auth/register", this.port);
-        ResponseEntity<String> response = this.restTemplate.postForEntity(url, this.testConstants.testUser,
-                String.class, "");
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody()).isEqualTo(null);
+        System.out.printf("TESTING RESISTRATION!!\n\n\n\n\n\n\n");
+        Gson gson = new Gson();
+        String userStringified = gson.toJson(this.testUser);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        try {
+            response = this.mockMvc
+                    .perform(post("/api/v1/auth/register").accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON).content(userStringified))
+                    .andReturn().getResponse();
+        } catch (Exception e) {
+            fail("Exception thrown");
+        }
+        assertThat(response.getStatus()).isEqualTo(201);
     }
 
     @Test
-    @DisplayName("Given that user provides existing email and password a 202 - accepted response should be returned")
+    @DisplayName("Given that user provides existing email and password a 202 -  accepted response should be returned")
+    @Order(2)
     public void login() {
-        String url = String.format("http://localhost:%d/api/v1/auth/login", this.port);
-        User testUser = new User("example@example.com", "password");
-        ResponseEntity<String> response = this.restTemplate.postForEntity(url, this.testConstants.testUser,
-                String.class, "");
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
-        Token token = this.jwtUtility.parseToken(response.getBody());
+        Gson gson = new Gson();
+        String userStringified = gson.toJson(this.testUser);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        try {
+            response = this.mockMvc
+                    .perform(post("/api/v1/auth/login").accept(MediaType.APPLICATION_JSON)
+                            .contentType(MediaType.APPLICATION_JSON).content(userStringified))
+                    .andReturn().getResponse();
+        } catch (Exception e) {
+            fail("Exception thrown");
+        }
+        assertThat(response.getStatus()).isEqualTo(202);
+        String responseAsString = "";
+        try {
+            responseAsString = response.getContentAsString();
+        } catch (Exception e) {
+            fail("Exception thrown");
+        }
+        Token token = this.jwtUtility.parseToken(responseAsString);
         assertThat(token.getEmail()).isEqualTo(testUser.getEmail());
     }
 }

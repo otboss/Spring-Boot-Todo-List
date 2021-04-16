@@ -1,50 +1,58 @@
 package com.otboss.todo.controller;
 
-import com.otboss.todo.constants.TestConstants;
-import com.otboss.todo.controller.list.TodoListController;
+import com.google.gson.Gson;
 import com.otboss.todo.model.TodoListItem;
+import com.otboss.todo.model.Token;
+import com.otboss.todo.model.User;
+import com.otboss.todo.repository.UserRepository;
+import com.otboss.todo.utility.JWTUtility;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class TodoListControllerTests {
 
     @Autowired
-    private TodoListController controller;
-
-    @LocalServerPort
-    private int port;
+    private MockMvc mockMvc;
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private JWTUtility jwtUtility;
 
     @Autowired
-    private TestConstants testConstants;
+    private UserRepository userRepository;
+
+    private User testUser = new User("example123@example.com", "password");
 
     @Test
-    public void contextLoads() throws Exception {
-        assertThat(controller).isNotNull();
-    }
-
-    @Test
+    @Order(3)
     public void createTodoListItem() {
-        String url = String.format("http://localhost:%d/api/v1/list", this.port);
+        this.userRepository.save(this.testUser);
+        Token token = new Token(this.testUser.getEmail());
         TodoListItem listItem = new TodoListItem("", (long) 1);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(this.testConstants.jwtToken);
-        HttpEntity<TodoListItem> entity = new HttpEntity<>(listItem, headers);
-        ResponseEntity<String> response = this.restTemplate.postForEntity(url, entity, String.class, "");
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        Gson gson = new Gson();
+        String listItemStringified = gson.toJson(listItem);
+        System.out.println(listItemStringified);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        try {
+            response = this.mockMvc.perform(
+                    post("/api/v1/list").header("Authorization", "Bearer " + this.jwtUtility.generateToken(token))
+                            .accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+                            .content(listItemStringified))
+                    .andReturn().getResponse();
+        } catch (Exception e) {
+        }
+        assertThat(response.getStatus()).isEqualTo(201);
     }
 
 }
