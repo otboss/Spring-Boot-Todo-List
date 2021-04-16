@@ -14,6 +14,8 @@
     <li>
         Once signed into the postgres client cli tool, create the todo database using the command
         <pre>CREATE DATABASE todo;</pre>
+        The database can also be created using the single command below:
+        <pre>PGPASSWORD=admin100% psql -U admin -h localhost -p 5440 -c 'create database todo;'</pre>
     </li>
     <li>
         Exit the postgres client and start the Spring Boot server using the command:
@@ -34,7 +36,7 @@
 <pre>curl -d '{"entry": "my test todo item"}' -H "Authorization: Bearer [JWT TOKEN]" -H "Content-Type: application/json" -X POST 'http://localhost:8080/api/v1/list'</pre>
 <span>Get TODO List Items</span>
 <pre>curl -H "Authorization: Bearer [JWT TOKEN]" -H "Content-Type: application/json" -X GET 'http://localhost:8080/api/v1/list?filter=&offset=0&limit=40'</pre>
-<span>Update TODO List Items</span>
+<span>Update TODO List Item</span>
 <pre>curl -d '{"id": 1, "entry": "hello world 2", "checked": true}' -H "Authorization: Bearer [JWT TOKEN]" -H "Content-Type: application/json" -X PUT 'http://localhost:8080/api/v1/list'</pre>
-<span>Delete TODO List Items</span>
+<span>Delete TODO List Item</span>
 <pre>curl -d '{"id": 1}' -H "Authorization: Bearer [JWT TOKEN]" -H "Content-Type: application/json" -X DELETE 'http://localhost:8080/api/v1/list'</pre>
