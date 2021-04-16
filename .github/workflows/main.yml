@@ -25,5 +25,11 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Start Postgres Database
+        run: docker-compose up & sleep 20
+        
+      - name: Create "todo" Database
+        run: sudo -u postgres psql -c 'create database test;'
+        
       - name: Controller Tests
         run: mvn test
