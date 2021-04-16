@@ -21,6 +21,9 @@
     </li>
 </ol>
 
+<h3>Testing</h3>
+<span>Test this project using the command:</span>
+<pre>mvn test</pre>
 
 <h3>Sample Curl Requests</h3>
 <span>Create Account</span>

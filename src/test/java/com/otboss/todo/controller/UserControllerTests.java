@@ -2,8 +2,8 @@ package com.otboss.todo.controller;
 
 import com.google.gson.Gson;
 import com.otboss.todo.model.Token;
-import com.otboss.todo.model.User;
 import com.otboss.todo.utility.JWTUtility;
+import com.otboss.todo.utility.TestConstants;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,9 +20,11 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static com.otboss.todo.utility.TestConstants.testUser;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestMethodOrder(OrderAnnotation.class)
 public class UserControllerTests {
 
     @Autowired
@@ -29,15 +33,12 @@ public class UserControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
-    private User testUser = new User("example@example.com", "password");
-
     @Test
     @DisplayName("Given that user provides valid email and password a 201 - created response should be returned")
     @Order(1)
     public void registration() {
-        System.out.printf("TESTING RESISTRATION!!\n\n\n\n\n\n\n");
         Gson gson = new Gson();
-        String userStringified = gson.toJson(this.testUser);
+        String userStringified = gson.toJson(testUser);
         MockHttpServletResponse response = new MockHttpServletResponse();
         try {
             response = this.mockMvc
@@ -55,7 +56,7 @@ public class UserControllerTests {
     @Order(2)
     public void login() {
         Gson gson = new Gson();
-        String userStringified = gson.toJson(this.testUser);
+        String userStringified = gson.toJson(testUser);
         MockHttpServletResponse response = new MockHttpServletResponse();
         try {
             response = this.mockMvc
@@ -72,6 +73,7 @@ public class UserControllerTests {
         } catch (Exception e) {
             fail("Exception thrown");
         }
+        TestConstants.jwtToken = responseAsString;
         Token token = this.jwtUtility.parseToken(responseAsString);
         assertThat(token.getEmail()).isEqualTo(testUser.getEmail());
     }

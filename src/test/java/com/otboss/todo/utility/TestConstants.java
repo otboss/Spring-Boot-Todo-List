@@ -1,4 +1,4 @@
-package com.otboss.todo.constants;
+package com.otboss.todo.utility;
 
 import com.otboss.todo.model.User;
 

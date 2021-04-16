@@ -38,6 +38,10 @@ public class TodoListItem {
         this.entry = entry;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void setChecked(Boolean checked) {
         this.checked = checked;
     }
