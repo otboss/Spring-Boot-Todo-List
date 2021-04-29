@@ -1,4 +1,4 @@
-package com.otboss.todo.controller.auth;
+package com.otboss.todo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +13,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 
 import java.util.List;
 
+import com.otboss.todo.dto.UserDto;
 import com.otboss.todo.model.Token;
 import com.otboss.todo.model.User;
 import com.otboss.todo.repository.UserRepository;
@@ -47,8 +48,9 @@ public class UserController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public void register(@RequestBody User credentials) {
+    public void register(@RequestBody UserDto credentials) {
         credentials.setPassword(BCrypt.withDefaults().hashToString(12, credentials.getPassword().toCharArray()));
-        this.userRepository.save(credentials);
+        User user = new User();
+        this.userRepository.save(user);
     }
 }
