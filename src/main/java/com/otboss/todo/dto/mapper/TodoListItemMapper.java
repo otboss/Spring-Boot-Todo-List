@@ -11,4 +11,9 @@ public class TodoListItemMapper {
         listItem.setTimestamp(todoListItem.getTimestamp());
         return listItem;
     }
+
+    public static TodoListItem toTodoListItem(TodoListItemDto todoListItemDto, Long userId) {
+        TodoListItem listItem = new TodoListItem(todoListItemDto.getEntry(), userId);
+        return listItem;
+    }
 }

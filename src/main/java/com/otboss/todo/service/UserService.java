@@ -1,9 +1,6 @@
 package com.otboss.todo.service;
 
-import com.otboss.todo.dto.UserDto;
+import com.otboss.todo.repository.UserRepository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface UserService extends JpaRepository<UserDto, Long> {
-
+public interface UserService extends UserRepository {
 }

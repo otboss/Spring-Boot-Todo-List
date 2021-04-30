@@ -1,4 +1,4 @@
-package com.otboss.todo.config;
+package com.otboss.todo.security;
 
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,6 +15,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // TODO configure web security
+        http.csrf().disable().authorizeRequests().antMatchers("/api/v*/auth/**").permitAll()
+                .antMatchers("/api/v*/list/**").permitAll();
     }
 }

@@ -1,9 +1,12 @@
-package com.otboss.todo.controller.list;
+package com.otboss.todo.controller;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.otboss.todo.dto.TodoListItemDto;
+import com.otboss.todo.dto.mapper.TodoListItemMapper;
 import com.otboss.todo.model.TodoListItem;
 import com.otboss.todo.model.Token;
 import com.otboss.todo.model.User;
@@ -13,6 +16,7 @@ import com.otboss.todo.utility.JWTUtility;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -36,7 +40,7 @@ import io.jsonwebtoken.MalformedJwtException;
 public class TodoListController {
 
     @Autowired
-    private TodoListRepository todoListRepository;
+    private TodoListRepository todoListService;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -65,16 +69,16 @@ public class TodoListController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public void createListItem(@RequestBody TodoListItem listItem,
+    public void createListItem(@RequestBody TodoListItemDto listItem,
             @RequestHeader(name = "Authorization") String token) {
         User user = this.getUserFromToken(token);
         TodoListItem createdListItem = new TodoListItem(listItem.getEntry(), user.getId());
-        this.todoListRepository.save(createdListItem);
+        this.todoListService.save(createdListItem);
     }
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public Page<TodoListItem> readList(@RequestParam String filter, @RequestParam String offset,
+    public Page<TodoListItemDto> readList(@RequestParam String filter, @RequestParam String offset,
             @RequestParam String limit, @RequestHeader(name = "Authorization") String token)
             throws ResponseStatusException {
         User user = this.getUserFromToken(token);
@@ -89,16 +93,18 @@ public class TodoListController {
         if (parsedLimit > 100) {
             parsedLimit = 100;
         }
-        return this.todoListRepository.findByUserId(user.getId(),
-                PageRequest.of(parsedOffset, parsedLimit, Sort.by("timestamp")));
+        return new PageImpl<>(this.todoListService
+                .findByUserId(user.getId(), PageRequest.of(parsedOffset, parsedLimit, Sort.by("timestamp")))
+                .getContent().stream().map(todoListItem -> TodoListItemMapper.toTodoListItemDto(todoListItem))
+                .collect(Collectors.toList()));
     }
 
     @PutMapping()
     @ResponseStatus(HttpStatus.OK)
-    public void updateListItem(@RequestBody TodoListItem item, @RequestHeader(name = "Authorization") String token)
+    public void updateListItem(@RequestBody TodoListItemDto item, @RequestHeader(name = "Authorization") String token)
             throws ResponseStatusException {
         User user = this.getUserFromToken(token);
-        Optional<TodoListItem> listItem = this.todoListRepository.findById(item.getId());
+        Optional<TodoListItem> listItem = this.todoListService.findById(item.getId());
         if (listItem == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "list item not found");
         }
@@ -108,16 +114,16 @@ public class TodoListController {
         }
         listItemParsed.setEntry(listItemParsed.getEntry());
         listItemParsed.setChecked(listItemParsed.getChecked());
-        this.todoListRepository.updateById(item.getId(), item.getEntry(), item.getChecked());
+        this.todoListService.updateById(item.getId(), item.getEntry(), item.getChecked());
     }
 
     @DeleteMapping()
     @ResponseStatus(HttpStatus.OK)
-    public void deleteListItem(@RequestBody TodoListItem item, @RequestHeader(name = "Authorization") String token) {
+    public void deleteListItem(@RequestBody TodoListItemDto item, @RequestHeader(name = "Authorization") String token) {
         User user = this.getUserFromToken(token);
         Optional<TodoListItem> listItem;
         try {
-            listItem = this.todoListRepository.findById(item.getId());
+            listItem = this.todoListService.findById(item.getId());
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "list item not found");
         }
@@ -125,7 +131,7 @@ public class TodoListController {
         if (listItemParsed.getUserId() != user.getId()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "");
         }
-        this.todoListRepository.deleteById(listItemParsed.getId());
+        this.todoListService.deleteById(listItemParsed.getId());
     }
 
 }

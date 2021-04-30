@@ -14,9 +14,10 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 import java.util.List;
 
 import com.otboss.todo.dto.UserDto;
+import com.otboss.todo.dto.mapper.UserMapper;
 import com.otboss.todo.model.Token;
 import com.otboss.todo.model.User;
-import com.otboss.todo.repository.UserRepository;
+import com.otboss.todo.service.UserService;
 import com.otboss.todo.utility.JWTUtility;
 
 @RestController
@@ -24,16 +25,16 @@ import com.otboss.todo.utility.JWTUtility;
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
     @Autowired
     private JWTUtility jwtUtility;
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public String login(@RequestBody User credentials) {
+    public String login(@RequestBody UserDto credentials) {
         List<User> fetchedCreds;
         try {
-            fetchedCreds = this.userRepository.findByEmail(credentials.getEmail());
+            fetchedCreds = this.userService.findByEmail(credentials.getEmail());
             fetchedCreds.get(0);
         } catch (IndexOutOfBoundsException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "invalid username or password", e);
@@ -50,7 +51,6 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@RequestBody UserDto credentials) {
         credentials.setPassword(BCrypt.withDefaults().hashToString(12, credentials.getPassword().toCharArray()));
-        User user = new User();
-        this.userRepository.save(user);
+        this.userService.save(UserMapper.toUser(credentials));
     }
 }
