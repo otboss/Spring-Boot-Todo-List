@@ -62,4 +62,8 @@ public class TodoListItem {
         return this.checked;
     }
 
+    public Long getTimestamp() {
+        return this.timestamp;
+    }
+
 }
